@@ -25,7 +25,7 @@ int main()
   
   try
   {
-    matrixInitializerTest();
+    //matrixInitializerTest();
   }
   catch (const std::out_of_range & oor) {
     std::cerr << "\nOut of Range error: " << oor.what() << '\n';
