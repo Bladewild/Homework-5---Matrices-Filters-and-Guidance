@@ -19,8 +19,10 @@ model::model() :
   R(4),
   I(100000),
   state(vector<double>{0, 0, 0}),
-  controller(PID((3.14159265358979323846/8),h,
-    vector<double>{ 5, 0.05, 0.05}))
+  d(0.0, 7.0),
+  controller(PID((3.14159265358979323846 / 8), h,
+    vector<double>{ 250000, 250, 2500}))
+  
 {}
 /*
 model::model(double input_desire, double step_size, const vector<double> & v_inputP,
@@ -41,18 +43,10 @@ void model::operator()()
   //calculate U;
   double force=controller(state[2]); //passing theta to get force
   calculateState(force);
+  addNoise();
 }
 
 
-void model::operator()(double input_step)
-{
-   if (input_step <= 0)
-  {
-    throw std::invalid_argument("input_step cannot be < 0 or = 0");
-  }
-  double force = controller(state[2]); //passing theta to get force
-  calculateState(force);
-}
 
 void model::calculateState(double input_force)
 {
@@ -65,13 +59,30 @@ void model::calculateState(double input_force)
   state[2] = theta;
 }
 
+void model::addNoise()
+{
+  // values near the mean are the most likely
+  // standard deviation affects the dispersion of generated values from the mean
+  double percentageNoise;
+  do
+  {
+    percentageNoise = d(RNG);
+  }while (!(percentageNoise >= -25.0 && percentageNoise <= 25.0));
+  percentageNoise /= 100.0;
+  //add noise based on percentage
+  state[0] += state[0] * percentageNoise;
+  state[1] += state[1] * percentageNoise;
+  state[2] += state[2] * percentageNoise;
+
+}
+
 ostream& operator<<(ostream& os, const model& Obj)
 {
   os.precision(8); // as requested
-  os <<"Alpha: "<< Obj.state[0]<<", "
-     <<"Omega: " << Obj.state[1] << ","
-     <<"Theta: "<< Obj.state[2] <<"\n";
-  //os << Obj.state[0] << ","<< Obj.state[1] << "\n";
+  //os <<"Alpha: "<< Obj.state[0]<<", "
+  //   <<"Omega: " << Obj.state[1] << ","
+  //   <<"Theta: "<< Obj.state[2] <<"\n";
+  os << Obj.state[0] << ","<< Obj.state[1] << "," << Obj.state[2] << "\n";
   return os;
 }
 

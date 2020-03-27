@@ -19,7 +19,7 @@
 #include <functional>
 #include "vector.h"
 #include "PID.h"
-#include <algorithm>    // std::max
+#include <random>
 
 using std::cout;
 using std::function;
@@ -37,6 +37,8 @@ private:
   double R;
   double I;
   vector<double> state;
+  std::normal_distribution<double> d;
+  std::default_random_engine RNG;
 
 public:
 
@@ -85,22 +87,21 @@ public:
   void operator()();
 
   /*!
-  * @brief steps given input_step
-  * @param[in] input_step non zero step positive number
-  * @post steps controller by input_step, updates Rates
-  * @post steps Euler object with input_step given
+  * @brief
+  * @pre
+  * @post 
   */
-  void operator()(double input_step);
+  void addNoise();
 
+
+
+  void calculateState(double input_force);
   /*!
   * @brief outputs state vector values of Obj
   * @param[in] os ostream object
   * @param[in] Obj model object to print values from
   * @post prints values in form
   */
-
-
-  void calculateState(double input_force);
 
   friend ostream& operator << (ostream& os, const model& Obj);
 

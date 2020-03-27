@@ -19,6 +19,7 @@
 #include <functional>
 #include "vector.h"
 #include "global.h"
+#include <random>
 
 using std::string;
 using std::cout;
@@ -108,16 +109,6 @@ public:
   double operator()(double state);
 
 
-  /*!
-  * @brief 
-  * @param[in] 
-  * @pre
-  * @post 
-  * @post 
-  * @throw invalid_argument when input_step<=0
-  */
-
-  double operator()(double input_step, double state);
 
   /*!
   * @brief assignment operator

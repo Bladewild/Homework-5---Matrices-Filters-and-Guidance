@@ -12,20 +12,14 @@
 
 double PID::operator()(double state)
 {
-  return (*this)(h,state);
-}
-
-double PID::operator()(double input_step,double state)
-{
-  if (input_step <= 0)
+  if (h <= 0)
   {
-    throw std::invalid_argument("input_step cannot be < 0 or = 0");
+    throw std::invalid_argument("step size cannot be < 0 or = 0");
   }
 
   double error = desired - state;
-  iError += 0.5 * (input_step) * (previousError + error);
-  double dError = (error-previousError)/input_step;
-
+  iError += 0.5 * (h) * (previousError + error);
+  double dError = (error-previousError)/h;
   double P = K[0] * error;
   double I = K[1] * iError;
   double D = K[2] * dError;

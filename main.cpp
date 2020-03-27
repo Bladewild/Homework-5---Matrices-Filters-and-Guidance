@@ -8,11 +8,12 @@
 */
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <string>
 #include "matrix.h"
 #include <algorithm>    // std::max
-#include <fstream>
 #include "global.h"
+#include "model.h"
 
 using std::cout;
 using std::cin;
@@ -20,11 +21,13 @@ using std::endl;
 
 
 void matrixInitializerTest();
+void modelTest();
 int main()
 {
   
   try
   {
+    modelTest();
     //matrixInitializerTest();
   }
   catch (const std::out_of_range & oor) {
@@ -47,6 +50,26 @@ int main()
   return 0;
 }
 
+
+void modelTest()
+{
+  std::ofstream fout;
+  fout.open("data.csv");
+  double stepsize = 0.1;
+  float seconds = 200;
+  model modelTesting;
+
+  fout.precision(8); // as requested
+  int stepstoTake = seconds / stepsize;
+  fout << "Timestep,Alpha,Omega,Theta\n";
+  for (int current_step = 0; current_step < stepstoTake; current_step++)
+  {
+    fout << (current_step/10.0) << ",";
+    modelTesting();
+    fout << modelTesting;
+  }
+
+}
 
 void matrixInitializerTest()
 {

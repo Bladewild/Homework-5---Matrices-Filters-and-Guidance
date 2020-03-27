@@ -1,0 +1,5 @@
+global.o: global.cpp global.h
+main.o: main.cpp matrix.h vector.h global.h vector.hpp matrix.hpp model.h \
+ PID.h
+model.o: model.cpp model.h vector.h global.h vector.hpp PID.h
+PID.o: PID.cpp PID.h vector.h global.h vector.hpp
