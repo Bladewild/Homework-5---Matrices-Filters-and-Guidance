@@ -37,7 +37,6 @@ template<typename T>
 class matrix
 {
 private:
-  vector<T>* grid;
   int current_cols;      
   int current_rows;     
 
@@ -51,6 +50,7 @@ private:
 
   //PUBLIC------------------------------
 public:
+  vector<T>* grid;
 
   matrix(int row=0,int col=0);
   //A constructor accepting a two-dimensional std::initializer_list
@@ -65,6 +65,9 @@ public:
 
   template<typename U>
   friend ostream& operator << (ostream& os, const matrix<U>& Obj);
+
+  template<typename U>
+  friend istream& operator >> (istream& finput, matrix<T>& Obj);
 
   matrix<T>& operator = (const matrix<T>& source);
   ~matrix();
@@ -82,7 +85,6 @@ public:
   template<typename U>
   friend matrix<U> operator*(const U& lhsScalar , const matrix<U>& rhs);
 
-
   T& operator()(const int i, const int j);
   T operator()(const int i, const int j) const;
 
@@ -92,10 +94,18 @@ public:
   template<typename U>
   friend matrix<U> operator*(const matrix<U>& lhs, const matrix<U>& rhs);
 
+  template<typename U>
+  friend matrix<U> operator*(const matrix<U>& lhs, const vector<U>& rhs);
+
+  template<typename U>
+  friend matrix<U> operator*(const vector<U>& lhs, const  matrix<U>& rhs);
+
   //matrix<T> invert();
 
   matrix<T> operator-() const;
 
+  static matrix<T> identity(int size);
+  matrix<T> transpose() const;
   matrix<T> invert() const;
 
 

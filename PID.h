@@ -27,7 +27,7 @@ using std::endl;
 using std::function;
 
 
-enum Range : int { first = 0, second = 1, third = 2 };
+//enum Range : int { first = 0, second = 1, third = 2 };
 /*
 * Class: PID
 *   Controller of the module
@@ -43,6 +43,7 @@ private:
   double iError;
   double h;
   vector<double> K;
+  double latestU;
 
 
 public:
@@ -60,8 +61,8 @@ public:
   * @pre input_stepSize >0
   * @post 
   */
-  PID(double i_desired, double i_h,vector<double> i_K):
-    desired(i_desired),previousError(0), iError(0),h(i_h),K(i_K)//input here
+  PID(double i_desired, double i_h, vector<double> i_K) :
+    desired(i_desired), previousError(0), iError(0), h(i_h), K(i_K), latestU(0.0)//input here
   {};
 
 
@@ -71,7 +72,7 @@ public:
   * @post copies Euler content to this object to be constructed
   */
   PID(const PID& oPid) : desired(oPid.desired), previousError(oPid.previousError),
-    iError(oPid.iError), h(oPid.h), K(oPid.K)
+    iError(oPid.iError), h(oPid.h), K(oPid.K), latestU(oPid.latestU)
   {}
 
 
@@ -86,7 +87,7 @@ public:
   * @throw range_error vector is empty (vector class)
   */
 
-  double  operator[](Range index_var) const;
+  double operator[](const int index_var) const;
 
   /*!
   * @brief  returns reference of element at position of vector K
@@ -98,7 +99,7 @@ public:
   * @throw range_error vector is empty (vector class)
   */
 
-  double& operator [] (const Range index_var);
+  double& operator [] (const int index_var);
 
   /*
   * @brief
@@ -129,6 +130,11 @@ public:
   */
 
   void reset(double setPoint);
+
+  double getU()
+  {
+    return latestU;
+  }
 
 };
 

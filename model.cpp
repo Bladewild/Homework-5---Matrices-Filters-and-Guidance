@@ -14,16 +14,22 @@
 // state(0,0,0)
 //R= 4m
 //I= 100000kg⋅m2 
+#include "dummyfilter.h"
+
+DummyFilter<double> model::default_filter;
+
 model::model() :
   h(0.1),
   R(4),
   I(100000),
   state(vector<double>{0, 0, 0}),
   d(0.0, 7.0),
+  filter(default_filter),
   controller(PID((3.14159265358979323846 / 8), h,
-    vector<double>{ 250000, 250, 2500}))
-  
+    vector<double>{4000, 100, 6000}))
 {}
+
+//vector<double>{ 4000, 100, 6000})),
 /*
 model::model(double input_desire, double step_size, const vector<double> & v_inputP,
   const vector<double>& v_inputRates,const vector<double> & v_inputBase,
@@ -33,7 +39,7 @@ model::model(double input_desire, double step_size, const vector<double> & v_inp
 {}*/
 
 model::model(const model& o) :
-  h(o.h), R(o.R), I(o.I), state(o.state)
+  h(o.h), R(o.R), I(o.I), state(o.state),filter(o.filter)
 {}
 
 
@@ -41,22 +47,40 @@ model::model(const model& o) :
 void model::operator()()
 {
   //calculate U;
-  double force=controller(state[2]); //passing theta to get force
+  double force=controller(state[0]); //passing theta to get force
   calculateState(force);
   addNoise();
+  filterNoise();
 }
 
+
+void model::filterNoise()
+{
+  state = filter(state);
+}
+
+void model::altfilterNoise(BaseFilter<double>& i_f)
+{
+  state = i_f(state);
+}
 
 
 void model::calculateState(double input_force)
 {
   double alpha = (R * input_force) / I;
   double omega = state[1] + (alpha * h);
-  double theta = state[2] + (omega * h);
+  double theta = state[0] + (omega * h);
+  //double theta = state[2] + (state[1] * h) + (omega * h);
 
-  state[0] = alpha;
+  state[2] = alpha;
   state[1] = omega;
-  state[2] = theta;
+  state[0] = theta;
+
+  //cout << "---------STATE---------" << endl;
+  //cout << state[2] << endl;
+  //cout << state[1] << endl;
+  //cout << state[0] << endl;
+  //cout << "---------STATE---------" << endl;
 }
 
 void model::addNoise()
@@ -67,14 +91,15 @@ void model::addNoise()
   do
   {
     percentageNoise = d(RNG);
-  }while (!(percentageNoise >= -25.0 && percentageNoise <= 25.0));
+  } while (!(percentageNoise >= -25.0 && percentageNoise <= 25.0));
   percentageNoise /= 100.0;
   //add noise based on percentage
   state[0] += state[0] * percentageNoise;
   state[1] += state[1] * percentageNoise;
   state[2] += state[2] * percentageNoise;
-
 }
+
+
 
 ostream& operator<<(ostream& os, const model& Obj)
 {
@@ -82,7 +107,7 @@ ostream& operator<<(ostream& os, const model& Obj)
   //os <<"Alpha: "<< Obj.state[0]<<", "
   //   <<"Omega: " << Obj.state[1] << ","
   //   <<"Theta: "<< Obj.state[2] <<"\n";
-  os << Obj.state[0] << ","<< Obj.state[1] << "," << Obj.state[2] << "\n";
+  os << Obj.state[2] << ","<< Obj.state[1] << "," << Obj.state[0] << "\n";
   return os;
 }
 
@@ -94,6 +119,9 @@ model& model::operator=(const model& source)
     R = source.R;
     I = source.I;
     state = source.state;
+    d = source.d;
+    RNG = source.RNG;
+    filter = source.filter; //check later
   }
 
   return *this;

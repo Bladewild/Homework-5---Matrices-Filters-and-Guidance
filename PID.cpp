@@ -26,6 +26,8 @@ double PID::operator()(double state)
 
   double u= (P + I + D);
   previousError = error;
+
+  latestU = u;
   return u;
 }
 
@@ -44,17 +46,35 @@ PID& PID::operator = (const PID& source)
   return *this;
 }
 
-double PID::operator[](Range index_var) const
+
+
+double PID::operator[](const int index_var) const
 {
+  if (0<index_var ||index_var>2)
+  {
+    throw std::invalid_argument("out of bounds.");
+  }
   return K[index_var];
 }
 
-double& PID::operator[](const Range index_var)
+double& PID::operator[](const int index_var)
 {
+  if (0 < index_var || index_var > 2)
+  {
+    throw std::invalid_argument("out of bounds.");
+  }
   return K[index_var];
 }
-
-
+/*
+constexpr bool PID::checkIndex(int index_var, int min, int max) const
+{
+  if (index_var < min || index_var>max)
+  {
+    return true;
+  }
+  return false;
+}
+*/
 //just the type would change
 //price opreator[] enum type
 

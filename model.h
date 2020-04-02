@@ -20,7 +20,8 @@
 #include "vector.h"
 #include "PID.h"
 #include <random>
-
+#include "basefilter.h"
+#include "dummyfilter.h"
 using std::cout;
 using std::function;
 using std::ostream;
@@ -39,6 +40,8 @@ private:
   vector<double> state;
   std::normal_distribution<double> d;
   std::default_random_engine RNG;
+  BaseFilter<double>& filter;
+  static DummyFilter<double> default_filter;
 
 public:
 
@@ -93,7 +96,14 @@ public:
   */
   void addNoise();
 
+  /*!
+  * @brief
+  * @pre
+  * @post
+  */
+  void filterNoise();
 
+  void altfilterNoise(BaseFilter<double>& i_f);
 
   void calculateState(double input_force);
   /*!

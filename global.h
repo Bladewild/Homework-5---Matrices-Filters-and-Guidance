@@ -17,7 +17,6 @@
 *   Used for general scenarios
 */
 #include <functional>
-
 /*!
 * @brief pow function for ints
 * @param[in] input_element value to pow

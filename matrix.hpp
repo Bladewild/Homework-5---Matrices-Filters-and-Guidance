@@ -231,6 +231,63 @@ matrix<T> operator*(const matrix<T>& lhs, const matrix<T>& rhs)
 
   return new_m;
 }
+//VECTOR MULTIPLICATION
+//Ax
+template<typename T>
+matrix<T> operator*(const matrix<T>& lhs, const vector<T>& rhs)
+{
+  if (lhs.current_cols != rhs.size())
+  {
+    throw std::invalid_argument("left matrix col and right matrix row is unequal");
+  }
+  int temp_rows = lhs.current_rows;
+  int temp_cols = 1;
+
+  matrix<T> new_m(temp_rows, temp_cols);
+
+
+  for (int i = 0; i < lhs.current_rows; i++)
+  {
+    for (int j = 0; j < 1; j++)
+    {
+      new_m.grid[i][j] = 0;
+      for (int k = 0; k < lhs.current_cols; k++)
+      {
+        new_m.grid[i][j] = new_m.grid[i][j] + (lhs.grid[i][k] * rhs[k]);
+      }
+    }
+  }
+  return new_m;
+}
+
+//xA
+template<typename T>
+matrix<T> operator*(const vector<T>& lhs, const  matrix<T>& rhs)
+{
+  if (lhs.size() != rhs.current_cols)
+  {
+    throw std::invalid_argument("left matrix col and right matrix row is unequal");
+  }
+  int temp_rows = lhs.size();
+  int temp_cols = rhs.current_cols;
+
+  matrix<T> new_m(temp_rows, temp_cols);
+
+
+  for (int i = 0; i < lhs.size(); i++)
+  {
+    for (int j = 0; j < rhs.current_cols; j++)
+    {
+      new_m.grid[i][j] = 0;
+      for (int k = 0; k < 1; k++)
+      {
+        new_m.grid[i][j] = new_m.grid[i][j] + (lhs[i] * rhs.grid[k][j]);
+      }
+    }
+  }
+
+  return new_m;
+}
 
 template<typename T>
 matrix<T> matrix<T>::operator-() const
@@ -286,6 +343,61 @@ ostream& operator << (ostream& os, const matrix<T>& Obj)
 }
 
 template<typename T>
+istream& operator >> (istream& finput, matrix<T>& Obj)
+{
+  //clears out entire vector
+  //check for invalid range
+
+  string temp_input;
+  int numlines = 0;
+  std::getline(finput, temp_input);
+  //run until non empty line has been found.
+  std::cout << "---TEST---" << std::endl;
+  while (temp_input.length() == 0)
+  {
+    std::getline(finput, temp_input);
+  }
+  vector<string> temp_vector;
+
+  //Get coloumn of string
+  std::istringstream tokenStream(temp_input);
+  std::istream_iterator<T> eos;              // end-of-stream iterator
+  std::istream_iterator<T> iit(tokenStream);   // stdin iterator
+  int input_coloumn = 0;
+  while (iit != eos)
+  {
+    input_coloumn++;
+    ++iit;
+  }
+  //-----------------
+
+  while (temp_input.length() != 0)
+  {
+    numlines++;
+    temp_vector.resize(numlines);
+    temp_vector[numlines-1] = temp_input;
+    std::getline(finput, temp_input);
+  }
+
+  matrix <T> new_m(numlines, input_coloumn);
+
+  for (int i = 0; i < numlines; i++)
+  {
+    tokenStream = std::istringstream(temp_vector[i]);//reset stream
+    iit = std::istream_iterator<T>(tokenStream);
+    for (int j = 0; j < input_coloumn; j++)
+    {
+      new_m(i,j) = *iit;
+      ++iit;
+    }
+
+  }
+  Obj = new_m;
+
+  return finput;
+}
+
+template<typename T>
 T& matrix<T>::operator()(const int i,const int j)
 {
   return grid[i][j];
@@ -327,24 +439,32 @@ matrix<T>::operator double() const
 
 
 template<typename T>
-matrix<T> matrix<T>::invert() const
+matrix<T> matrix<T>::identity(int size)
 {
-  //Identity matrix
-  matrix<T> m_Identity(current_rows, current_cols);
-  for (int i = 0; i < current_rows; i++)
+  matrix<T> m_Identity(size, size);
+  for (int i = 0; i < size; i++)
   {
-    for (int j = 0; j < current_cols; j++)
+    for (int j = 0; j < size; j++)
     {
       if (i == j)
       {
-        m_Identity(i, i) = 1;
+        m_Identity(i, i) = 1.0;
       }
       else
       {
-        m_Identity(i, j) = 0;
+        m_Identity(i, j) = 0.0;
       }
     }
   }
+  return m_Identity;
+}
+
+template<typename T>
+matrix<T> matrix<T>::invert() const
+{
+  //Identity matrix
+  matrix<T> m_Identity = matrix<T>::identity(current_rows);
+  //cout << "THIS\n"<<(*this) << std::endl << ::endl;
   matrix<T> xI;
   matrix<T> old_x = m_Identity;
 
@@ -360,5 +480,22 @@ matrix<T> matrix<T>::invert() const
     outcome = (m_Identity - xI * (*this));
     guess = static_cast<double>(outcome);
   }
+  //cout << "XI\n" << xI << std::endl << ::endl;
   return xI;
+}
+
+template<typename T>
+matrix<T> matrix<T>::transpose() const
+{
+  //Identity matrix
+  //reverse
+  matrix<T> transposedMatrix(current_cols, current_rows);
+  for (int i = 0; i < current_rows; ++i)
+  {
+    for (int j = 0; j < current_cols; ++j)
+    {
+      transposedMatrix.grid[j][i] = (*this).grid[i][j];
+    }
+  }  
+  return transposedMatrix;
 }
