@@ -1,6 +1,6 @@
 /*
 * Author: Marky Santos-Tankia
-* File: .h Date: 3/13/20
+* File: SPLP.h Date: 3/13/20
 * Class: CS 5201
 * Instructor : Clayton Price
 *
@@ -17,7 +17,8 @@
 #include "basefilter.h"
 
  /*
- * Class:
+ * Class:  single-pole low-pass filter
+ *  (essentially expoonential moving average)
  */
 template<typename T>
 class SLPLFilter : public BaseFilter<T>
@@ -29,17 +30,22 @@ private:
 public:
 
 
-  SLPLFilter(vector<T> initial_state,double i_h,double i_f) : EMA(initial_state),h(i_h),f(i_f){}
+  /*!
+  * @brief Constructor
+  * @pre h > 0
+  * @post creates model object with default values
+  */
+  SLPLFilter(vector<T> initial_state, double i_h, double i_f);
 
-  virtual vector<T> operator()(vector<T> state)
-  {
-    //cout << "FILTER2\n";
-    double alpha = 1 - exp(-f * h);
-    EMA = EMA*alpha +(1-alpha)*state;
-    return EMA;
-  }
+  /*!
+  * @brief filter function
+  * @pre double * T (multiplication) must be defined
+  * @pre T * double (multiplication) must be defined
+  * @post filters out state and filtered out state
+  */
+  virtual vector<T> operator()(vector<T> state, vector<T> control_vector);
 
 };
-
+#include "SPLPFilter.hpp"
 
 #endif

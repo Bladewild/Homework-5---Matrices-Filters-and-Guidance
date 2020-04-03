@@ -16,11 +16,12 @@
 #include "model.h"
 #include "SPLPFilter.h"
 #include "kalmanfilter.h"
+#include "combinationfilter.h"
+#include <array>
 
 using std::cout;
 using std::cin;
 using std::endl;
-
 
 void matrixInitializerTest();
 void normalModel();
@@ -30,9 +31,9 @@ int main()
   
   try
   {
-    normalModel();
-    //modelTest();
-    //matrixInitializerTest();
+    //normalModel();
+    modelTest();
+    matrixInitializerTest();
   }
   catch (const std::out_of_range & oor) {
     std::cerr << "\nOut of Range error: " << oor.what() << '\n';
@@ -55,12 +56,33 @@ int main()
 }
 void normalModel()
 {
+  /*
   std::ofstream fout;
-
-  fout.open("dataslnormal.csv");
+  double R = 4;
+  double I = 100000;
+  vector<double> state{ 0, 0, 0 };
+  double desiredtheta = 3.14159265358979323846 / 8;
+  vector<double>Kinput{ 4000, 100, 6000 };
+  fout.open("dataslnormaldefault.csv");
   double stepsize = 0.1;
   float seconds = 200;
   model modelTesting;
+
+  fout.precision(8); 
+  int stepstoTake = seconds / stepsize;
+  fout << "Timestep,Alpha,Omega,Theta\n";
+  for (int current_step = 0; current_step < stepstoTake; current_step++)
+  {
+    fout << (current_step / 10.0) << ",";
+    modelTesting();
+    fout << modelTesting;
+  }
+  fout.close();
+
+  fout.open("dataslnormalfilter.csv");
+
+  model modelTestingKalman(stepsize,R,I,desiredtheta,
+    vector<double> i_state, BaseFilter<double> & i_filter, Kinput);
 
   fout.precision(8); // as requested
   int stepstoTake = seconds / stepsize;
@@ -70,43 +92,42 @@ void normalModel()
     fout << (current_step / 10.0) << ",";
     modelTesting();
     fout << modelTesting;
-    if (current_step == 100)
-    {
-      modelTesting.controller[5] = 0;
-      modelTesting.controller[5] = 0;
-      modelTesting.controller[5] = 0;
-    }
   }
-  fout.close();
+  fout.close();*/
 }
 
 void modelTest()
 {
   std::ofstream fout;
-  
-  fout.open("dataslpl.csv");
+  double R = 4;
+  double I = 100000;
+  vector<double> state{ 0, 0, 0 };
+  double desiredtheta = 3.14159265358979323846 / 8;
+  vector<double>Kinput{ 4000, 100, 6000 };
   double stepsize = 0.1;
   float seconds = 200;
-  model modelTesting;
-
-  fout.precision(8); // as requested
   int stepstoTake = seconds / stepsize;
+
+  fout.open("dataslpl.csv");
+
   SLPLFilter<double> slplfilter(vector<double>{0, 0, 0}, 0.1, 10);
+
+  model modelTestingSLPL(stepsize, R, I, desiredtheta,
+    state, Kinput);
   fout << "Timestep,Alpha,Omega,Theta\n";
   for (int current_step = 0; current_step < stepstoTake; current_step++)
   {
     fout << (current_step/10.0) << ",";
-    modelTesting();
-    modelTesting.altfilterNoise(slplfilter);
-    fout << modelTesting;
+    modelTestingSLPL();
+    modelTestingSLPL.addNoise();
+    modelTestingSLPL.filterNoise(slplfilter);
+    fout << modelTestingSLPL;
   }
   fout.close();
   //-----------------------
 
   fout.open("datakalman.csv");
-  stepsize = 0.1;
-  seconds = 200;
-  model modelTesting2;
+  
 
   double h = stepsize;
   matrix<double> A =
@@ -132,25 +153,68 @@ void modelTest()
     {0.0,0.0,1.0},//alpha
   };
 
-  matrix<double> R =
+  matrix<double> R_Error =
   {
     {0.2,0.0,0.0},//theta
     {0.0,0.2,0.0},//omega
     {0.0,0.0,0.2},//alpha
   };
 
-  Kalmanfilter<double> f(A, B, initial_state, P, R, modelTesting2.controller);
+  model modelTestingKALMAN(stepsize, R, I, desiredtheta,
+    state, Kinput);
+
+  Kalmanfilter<double> kfilter(A, B, initial_state, P, R_Error);
+  //Kalmanfilter<double> kfilter(A, B, initial_state, P, R_Error,
+  //  [&modelTestingKALMAN]() {return modelTestingKALMAN.controller.getU();});
   fout.precision(8); // as requested
   stepstoTake = seconds / stepsize;
   fout << "Timestep,Alpha,Omega,Theta\n";
   for (int current_step = 0; current_step < stepstoTake; current_step++)
   {
     fout << (current_step / 10.0) << ",";
-    modelTesting2();
-    modelTesting2.altfilterNoise(f);
-    fout << modelTesting2;
-    //cout << modelTesting2;
+    modelTestingKALMAN();
+    modelTestingKALMAN.addNoise();
+    modelTestingKALMAN.filterNoise(kfilter);
+
+    fout << modelTestingKALMAN;
   }
+  fout.close();
+
+  fout.open("datacombi.csv");
+
+  model modelTestingCHAIN(stepsize, R, I, desiredtheta,
+    state, Kinput);
+
+
+  //Kalmanfilter<double> k2filter(A, B, initial_state, P, R_Error,
+  //  [&modelTestingCHAIN]() {return modelTestingCHAIN.controller.getU(); });
+
+
+  Kalmanfilter<double> k2filter(A, B, initial_state, P, R_Error);
+  CombinationFilter<double> combination{ &k2filter};
+  fout << "Timestep,Alpha,Omega,Theta\n";
+  for (int current_step = 0; current_step < stepstoTake; current_step++)
+  {
+    fout << (current_step / 10.0) << ",";
+    modelTestingCHAIN();
+    modelTestingCHAIN.addNoise();
+    modelTestingCHAIN.filterNoise(combination);
+    fout << modelTestingCHAIN;
+  }
+  fout.close();
+
+  fout.open("dataDummy.csv");
+
+
+  model modelTestingDummy;
+  fout << "Timestep,Alpha,Omega,Theta\n";
+  for (int current_step = 0; current_step < stepstoTake; current_step++)
+  {
+    fout << (current_step / 10.0) << ",";
+    modelTestingDummy();
+    fout << modelTestingDummy;
+  }
+
   fout.close();
 }
 
@@ -221,6 +285,7 @@ void matrixInitializerTest()
   matrix<int> finMatrixtest;
   cin >> finMatrixtest;
   cout << "\n\n\nfinMatrixtest\n" << finMatrixtest << endl;
+
 
 }
 

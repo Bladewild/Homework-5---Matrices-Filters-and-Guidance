@@ -40,7 +40,6 @@ vector<T>::vector(const vector<T>& otherVector)
 {
   init(otherVector.current_size);
   std::copy(otherVector.arr, otherVector.arr + otherVector.current_size, arr);
-
 }
 
 template<typename T>

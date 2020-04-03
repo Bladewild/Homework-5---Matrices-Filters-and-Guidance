@@ -20,9 +20,9 @@ double PID::operator()(double state)
   double error = desired - state;
   iError += 0.5 * (h) * (previousError + error);
   double dError = (error-previousError)/h;
-  double P = K[0] * error;
-  double I = K[1] * iError;
-  double D = K[2] * dError;
+  double P = K_GAINS[0] * error;
+  double I = K_GAINS[1] * iError;
+  double D = K_GAINS[2] * dError;
 
   double u= (P + I + D);
   previousError = error;
@@ -40,31 +40,42 @@ PID& PID::operator = (const PID& source)
     previousError = source.previousError;
     iError = source.iError;
     h = source.h;
-    K = source.K;
+    K_GAINS = source.K_GAINS;
+    latestU = source.latestU;
   }
-
   return *this;
 }
 
 
 
-double PID::operator[](const int index_var) const
+double PID::operator[](const K index_var) const
 {
-  if (0<index_var ||index_var>2)
+  if (0 > index_var ||index_var>2)
   {
     throw std::invalid_argument("out of bounds.");
   }
+  return K_GAINS[index_var];
+}
+
+double& PID::operator[](const K index_var)
+{
+  if (0 > index_var || index_var > 2)
+  {
+    throw std::invalid_argument("out of bounds.");
+  }
+  return K_GAINS[index_var];
+}
+/*
+double PID::operator[](Range index_var) const
+{
   return K[index_var];
 }
 
-double& PID::operator[](const int index_var)
+double& PID::operator[](const Range index_var)
 {
-  if (0 < index_var || index_var > 2)
-  {
-    throw std::invalid_argument("out of bounds.");
-  }
   return K[index_var];
 }
+*/
 /*
 constexpr bool PID::checkIndex(int index_var, int min, int max) const
 {
@@ -86,4 +97,9 @@ void PID::reset(double setPoint)
   }
   iError = 0;
   desired = setPoint;
+}
+
+double PID::getU()
+{
+  return latestU;
 }

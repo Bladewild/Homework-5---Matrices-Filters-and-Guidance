@@ -29,6 +29,10 @@ using std::ostream;
 
 /*
 * Class: model
+*   Model simulates lunar lander
+*   Pid controller is public for easy access
+*   
+*   
 */
 class model
 {
@@ -40,16 +44,13 @@ private:
   vector<double> state;
   std::normal_distribution<double> d;
   std::default_random_engine RNG;
-  BaseFilter<double>& filter;
-  static DummyFilter<double> default_filter;
+  //BaseFilter<double>& filter;
+  //static DummyFilter<double> default_filter;
+
+
 
 public:
 
-  //Appropriate constructors/destructors/copy functionality
-  //Function evaluation operator () that “steps” the model, calculating a new state given the thruster force input
-  //A means of writing the current state of the model to a std::ostream (stream operator), using the format Alpha: <alpha>, Omega: <omega>, Theta: <theta>
-  //A means of interacting with a PID controller to send the current state and receive the thruster force
-  //A means of using any filter derived from your filter interface base to filter the “measured” state prior to sending it to the controller
   /*!
   * Controller is public so that the user can control the
   * the smodelnal rate
@@ -59,7 +60,9 @@ public:
 
   /*!
   * @brief Default Constructor
-  * @brief
+  * @brief h=0.1,setpoint pi/8 or 3.14159265358979323846 / 8
+  * @brief state(0,0,0) R=4 I= 100000 d=(0.0, 7.0)
+  * @brief K {4000, 100, 6000}
   * @post creates model object with default values
   */
   model();
@@ -67,11 +70,18 @@ public:
 
   /*!
   * @brief 
-  * @param[in] i
-  * @pre
-  * @post 
+  * @param[in] i_h step_size
+  * @param[in] i_R
+  * @param[in] i_I 
+  * @param[in] i_desiredtheta theta to move to
+  * @param[in] i_state starting values for model
+  * @param[in] i_K K gains for PID controller
+  * @pre all values should be reasonable in context
+  * @post creates model object with given values
+  * @note normal distribution cannot be changed
   */
-  //model();
+  model(double i_h, double i_R, double i_I, double i_desiredtheta,
+    const vector<double>& i_state, const vector<double>& i_K);
 
   /*! 
   * @brief copy constructor
@@ -82,29 +92,36 @@ public:
   model(const model& o);
 
   /*!
-  * @brief steps default h
-  * @post steps controller by h, updates Rates
-  * @post steps Euler object with default step (h)
+  * @brief step function
+  * @post steps model by h
+  * @post calculates new state given u signal calculate
+  * @throw invalid_argument I cannot be 0. Divide by 0"
   */
 
   void operator()();
 
   /*!
-  * @brief
-  * @pre
-  * @post 
+  * @brief adds noise up to 25% error
+  * @post adds up to 25% percentage noise based on normal distribution
   */
   void addNoise();
 
+
   /*!
-  * @brief
-  * @pre
-  * @post
+  * @brief filters noise of the assumed noisy measured state
+  * @pre state of this model has to be noisy for filter to work
+  * @pre filter must already be ready filter for this state
+  * @pre filter must use op(vector<double> state) to filter state
+  * @post filters noise of current state by passed in filter
   */
-  void filterNoise();
+  void filterNoise(BaseFilter<double>& filter);
 
-  void altfilterNoise(BaseFilter<double>& i_f);
-
+  /*!
+  * @brief calculates new state given force
+  * @param[in] input_force u signal
+  * @post calculates new state given input_force value
+  * @throw invalid_argument I cannot be 0. Divide by 0"
+  */
   void calculateState(double input_force);
   /*!
   * @brief outputs state vector values of Obj
@@ -122,6 +139,13 @@ public:
   */
 
   model& operator = (const model& source);
+
+
+  /*!
+  * @brief returns latest Theta value
+  * @post gets Theta from state
+  */
+  double getTheta() const;
 };
 
 

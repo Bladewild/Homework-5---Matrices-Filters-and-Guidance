@@ -1,6 +1,6 @@
 /*
 * Author: Marky Santos-Tankia
-* File: PID.h Date: 3/13/20
+* File: PID.h Date: 4/3/20
 * Class: CS 5201
 * Instructor : Clayton Price
 *
@@ -27,7 +27,6 @@ using std::endl;
 using std::function;
 
 
-//enum Range : int { first = 0, second = 1, third = 2 };
 /*
 * Class: PID
 *   Controller of the module
@@ -42,11 +41,14 @@ private:
   double previousError;
   double iError;
   double h;
-  vector<double> K;
   double latestU;
+  vector<double> K_GAINS;
 
 
 public:
+
+  enum K : int { P = 0, I = 1, D = 2 };
+
   /*!
   * @brief uses default c++ implementation
   * @brief useful for initializing and assign later.
@@ -55,31 +57,33 @@ public:
 
   /*!
   * @brief constructor
-  * @param[in] 
-  * @pre
-  * @pre
-  * @pre input_stepSize >0
-  * @post 
+  * @param[in] i_desired value to move to
+  * @param[in] i_h step_size
+  * @param[in] i_K K gains values
+  * @pre i_h value must be non-negative non zero
+  * @pre i_K should be reasonable in context for model (so no negatives)
+  * @post creates PID controller based on given values
   */
   PID(double i_desired, double i_h, vector<double> i_K) :
-    desired(i_desired), previousError(0), iError(0), h(i_h), K(i_K), latestU(0.0)//input here
+    desired(i_desired), previousError(0), iError(0), h(i_h), latestU(0.0),
+    K_GAINS(i_K)
   {};
 
 
   /*!
   * @brief copy constructor
   * @param[in] otherEuler
-  * @post copies Euler content to this object to be constructed
+  * @post copies oPid content to this object to be constructed
   */
   PID(const PID& oPid) : desired(oPid.desired), previousError(oPid.previousError),
-    iError(oPid.iError), h(oPid.h), K(oPid.K), latestU(oPid.latestU)
+    iError(oPid.iError), h(oPid.h), latestU(oPid.latestU), K_GAINS(oPid.K_GAINS)
   {}
 
 
 
   /*!
   * @brief  returns value of element at position of vector K
-  * @param[in]  index_var index position to access------------------------------------
+  * @param[in]  index_var index position to access by K::P,K::I,K::D
   * @pre index_var must be bounded,non negative
   * @post returns value to element at given index_var
   * @post of vector K
@@ -87,11 +91,11 @@ public:
   * @throw range_error vector is empty (vector class)
   */
 
-  double operator[](const int index_var) const;
+  double operator[](const K index_var) const;
 
   /*!
   * @brief  returns reference of element at position of vector K
-  * @param[in]  index_var index position to access------------------------------------------
+  * @param[in]  index_var index position to access by K::P,K::I,K::D
   * @pre index_var must be bounded,non negative
   * @post returns reference to element at given index_var
   * @post of vector K
@@ -99,12 +103,13 @@ public:
   * @throw range_error vector is empty (vector class)
   */
 
-  double& operator [] (const int index_var);
+  double& operator [] (const K index_var);
 
   /*
-  * @brief
-  * @post 
-  * @post 
+  * @brief calculates u signal given state
+  * @pre step_size h cannot be initialized to <0 or = 0
+  * @post calculates u signal given state
+  * @throw invalid_argument if 0 or negative h
   */
 
   double operator()(double state);
@@ -117,24 +122,25 @@ public:
   * @post copies source's content to *this
   */
   PID & operator = (const PID& source);
-
   
 
   /*!
   * @brief reset setpoint
-  * @param[in] setPoint Glucose to set to
-  * @pre setPoint >0
-  * @post sets desiredGlucose of model
-  * @post to setPoint
+  * @param[in] setPoint theta to set to
+  * @pre setPoint (must be reasonable in context)
+  * @post sets desired value to move 
+  * @post iError is reset
   * @throw invalid_argument when setPoint<=0
   */
 
   void reset(double setPoint);
 
-  double getU()
-  {
-    return latestU;
-  }
+  /*!
+  * @brief returns latestU value
+  * @pre stepfunction must have calculated recently
+  * @post gets lastestU calculated from stepfunction
+  */
+  double getU();
 
 };
 

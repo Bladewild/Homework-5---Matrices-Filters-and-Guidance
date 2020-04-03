@@ -252,7 +252,7 @@ public:
   /*!
   * @brief
   * @param[in]
-  * @pre f_callback must be able to handle unassigned elements 
+  * @pre f must be able to handle unassigned elements 
   * @pre "function f must have the signature T f(T) (for template type T)"
   * @post function calls each element and stores them into new vector
   * @post return new vector
@@ -371,6 +371,13 @@ public:
   * @post returns norm 2 of the vector
   */
   operator double() const;
+
+  /*!
+  * @brief do nothing, throw away for compiler warnings to be pleased
+  * @post do nothing
+  */
+  void donothing() const
+  {}
 };
 
 

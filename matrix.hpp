@@ -21,7 +21,6 @@ matrix<T>::matrix(int row,int col)
 template<typename T>
 matrix<T>::matrix(std::initializer_list<std::initializer_list<T>> init_list)
 {
-  //throw an error if incorrect sizing
   int col = (init_list.begin())->size();
   int row = init_list.size();
   init(row,col);
@@ -29,6 +28,12 @@ matrix<T>::matrix(std::initializer_list<std::initializer_list<T>> init_list)
   int index_y = 0;
   for (auto y : init_list)
   {
+    //throw an error if incorrect sizing
+    int y_col = y.size();
+    if (col != y_col)
+    {
+      throw std::invalid_argument(" initialization list has inconsistent coloumns.");
+    }
     int index_x = 0;
     for (auto x : y)
     {
@@ -44,7 +49,6 @@ void matrix<T>::init(int input_rows,int input_coloumns)
 {
   if (input_rows < 0 || input_coloumns < 0)
   {
-    cout << input_rows << " " << input_coloumns;
     throw std::invalid_argument(" cannot be a negative number.");
   }
   current_cols = input_coloumns;
@@ -68,7 +72,6 @@ matrix<T>::matrix(const matrix<T>& otherMatrix)
       grid[y][x]= otherMatrix.grid[y][x];
     }
   }
-
 }
 
 //--------------OPERATORS------------------
