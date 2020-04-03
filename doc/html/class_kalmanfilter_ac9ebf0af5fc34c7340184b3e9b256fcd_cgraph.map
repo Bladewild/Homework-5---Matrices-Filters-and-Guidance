@@ -1,0 +1,7 @@
+<map id="Kalmanfilter::operator()" name="Kalmanfilter::operator()">
+<area shape="rect" id="node1" title="kalman filter, filters out noise based on model predicted" alt="" coords="5,56,159,83"/>
+<area shape="rect" id="node2" href="$classmatrix.html#ad0f604172bc0e3d9a1b75501082331c8" title=" " alt="" coords="377,5,485,32"/>
+<area shape="rect" id="node3" href="$classmatrix.html#a22d525857339907d7962179af6706002" title=" " alt="" coords="220,31,316,57"/>
+<area shape="rect" id="node4" href="$classvector.html#a11d1d386b9a39207a606f6bff1ff5b1e" title="gives size of vector" alt="" coords="224,81,312,108"/>
+<area shape="rect" id="node5" href="$classmatrix.html#a37f2a562d0b2178048033764ef018e22" title=" " alt="" coords="207,132,329,159"/>
+</map>

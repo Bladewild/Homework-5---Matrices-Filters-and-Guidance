@@ -18,7 +18,6 @@
 #include "matrix.h"
 #include "basefilter.h"
 #include "PID.h"
-#include <functional>
  /*
  * Class: Kalmanfilter
  *  kalmanfilter class. Uses predicted model and

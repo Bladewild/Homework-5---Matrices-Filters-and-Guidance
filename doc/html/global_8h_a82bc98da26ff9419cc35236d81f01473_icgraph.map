@@ -1,0 +1,5 @@
+<map id="customPow" name="customPow">
+<area shape="rect" id="node1" title="pow function for ints" alt="" coords="303,31,393,57"/>
+<area shape="rect" id="node2" href="$global_8h.html#a298f46e476b77c38b17feb6596bde0a4" title="calculates nth root" alt="" coords="188,5,255,32"/>
+<area shape="rect" id="node3" href="$classvector.html#a4753fbc3a429a26dd76e677579d6fc02" title="calculate p&#45;norm" alt="" coords="5,23,140,65"/>
+</map>

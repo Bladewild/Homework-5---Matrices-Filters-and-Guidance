@@ -218,8 +218,6 @@ matrix<T> operator*(const matrix<T>& lhs, const matrix<T>& rhs)
 
   matrix<T> new_m(temp_rows, temp_cols);
 
-
-
   for (int i = 0; i < lhs.current_rows; i++)
   {
     for (int j = 0; j < rhs.current_cols; j++)
@@ -295,10 +293,10 @@ matrix<T> operator*(const vector<T>& lhs, const  matrix<T>& rhs)
 template<typename T>
 matrix<T> matrix<T>::operator-() const
 {
-  //check if vector is empty;
+  //check if matrix is empty;
   if (current_rows == 0 || current_cols == 0)
   {
-    throw std::range_error(" vector is empty");
+    throw std::range_error("matrix is empty");
   }
 
   matrix<T> new_m(current_rows, current_cols);
@@ -355,7 +353,6 @@ istream& operator >> (istream& finput, matrix<T>& Obj)
   int numlines = 0;
   std::getline(finput, temp_input);
   //run until non empty line has been found.
-  std::cout << "---TEST---" << std::endl;
   while (temp_input.length() == 0)
   {
     std::getline(finput, temp_input);
@@ -403,12 +400,22 @@ istream& operator >> (istream& finput, matrix<T>& Obj)
 template<typename T>
 T& matrix<T>::operator()(const int i,const int j)
 {
+  if (0 > i || i > current_rows || 0 > j || j > current_cols)
+  {
+    std::cout << i << " " << j << std::endl;
+    throw std::invalid_argument("out of bounds.");
+  }
   return grid[i][j];
 }
 
 template<typename T>
 T matrix<T>::operator()(const int i, const int j) const
 {
+  if (0 > i || i > current_rows || 0 > j || j > current_cols)
+  {
+    std::cout << i << " " << j << std::endl;
+    throw std::invalid_argument("out of bounds.");
+  }
   return grid[i][j];
 }
 
@@ -444,6 +451,10 @@ matrix<T>::operator double() const
 template<typename T>
 matrix<T> matrix<T>::identity(int size)
 {
+  if (size <= 0)
+  {
+    throw std::invalid_argument("non negative, non zero values only");
+  }
   matrix<T> m_Identity(size, size);
   for (int i = 0; i < size; i++)
   {
@@ -465,9 +476,16 @@ matrix<T> matrix<T>::identity(int size)
 template<typename T>
 matrix<T> matrix<T>::invert() const
 {
+  if (current_rows == 0 || current_cols == 0)
+  {
+    throw std::range_error("matrix is empty");
+  }
+  if (current_rows != current_cols)
+  {
+    throw std::range_error("matrix must be square");
+  }
   //Identity matrix
   matrix<T> m_Identity = matrix<T>::identity(current_rows);
-  //cout << "THIS\n"<<(*this) << std::endl << ::endl;
   matrix<T> xI;
   matrix<T> old_x = m_Identity;
 
@@ -483,15 +501,16 @@ matrix<T> matrix<T>::invert() const
     outcome = (m_Identity - xI * (*this));
     guess = static_cast<double>(outcome);
   }
-  //cout << "XI\n" << xI << std::endl << ::endl;
   return xI;
 }
 
 template<typename T>
 matrix<T> matrix<T>::transpose() const
 {
-  //Identity matrix
-  //reverse
+  if (current_rows == 0 || current_cols == 0)
+  {
+    throw std::range_error("matrix is empty");
+  }
   matrix<T> transposedMatrix(current_cols, current_rows);
   for (int i = 0; i < current_rows; ++i)
   {

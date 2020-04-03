@@ -1,6 +1,6 @@
 ﻿/*
 * Author: ALAIN MARKUS SANTOS-TANKIA
-* File: PID.cpp Date: 3/13/20
+* File: PID.cpp Date: 4/3/20
 * Class: CS 5201
 * Instructor : CLATON PRICE
 *
@@ -65,29 +65,6 @@ double& PID::operator[](const K index_var)
   }
   return K_GAINS[index_var];
 }
-/*
-double PID::operator[](Range index_var) const
-{
-  return K[index_var];
-}
-
-double& PID::operator[](const Range index_var)
-{
-  return K[index_var];
-}
-*/
-/*
-constexpr bool PID::checkIndex(int index_var, int min, int max) const
-{
-  if (index_var < min || index_var>max)
-  {
-    return true;
-  }
-  return false;
-}
-*/
-//just the type would change
-//price opreator[] enum type
 
 void PID::reset(double setPoint)
 {

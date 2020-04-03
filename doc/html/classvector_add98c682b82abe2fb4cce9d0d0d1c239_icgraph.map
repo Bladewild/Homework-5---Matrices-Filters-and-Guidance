@@ -1,0 +1,5 @@
+<map id="vector::donothing" name="vector::donothing">
+<area shape="rect" id="node1" title="do nothing, throw away for compiler warnings to be pleased" alt="" coords="212,31,332,57"/>
+<area shape="rect" id="node2" href="$class_dummy_filter.html#a97804cfc58350e415d29afb709882a56" title="literally does nothing" alt="" coords="5,5,164,32"/>
+<area shape="rect" id="node3" href="$class_s_l_p_l_filter.html#a462fc6691b6d738dbb8a31a1b4d80edf" title="filter function" alt="" coords="11,56,158,83"/>
+</map>

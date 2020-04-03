@@ -1,8 +1,0 @@
-global.o: global.cpp global.h
-main.o: main.cpp matrix.h vector.h global.h vector.hpp matrix.hpp model.h \
- PID.h basefilter.h dummyfilter.h dummyfilter.hpp SPLPFilter.h \
- SPLPFilter.hpp kalmanfilter.h kalmanfilter.hpp combinationfilter.h \
- combinationfilter.hpp
-model.o: model.cpp model.h vector.h global.h vector.hpp PID.h \
- basefilter.h dummyfilter.h dummyfilter.hpp
-PID.o: PID.cpp PID.h vector.h global.h vector.hpp

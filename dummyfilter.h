@@ -17,7 +17,7 @@
 #include "basefilter.h"
 
  /*
- * Class:
+ * Class: DummyFilter
  *   Dummyfilter, Doesn't filter anything, returns state
  */
 

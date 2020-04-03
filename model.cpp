@@ -14,9 +14,7 @@
 // state(0,0,0)
 //R= 4m
 //I= 100000kg⋅m2 
-#include "dummyfilter.h"
 
-//DummyFilter<double> model::default_filter;
 
 model::model() :
   h(0.1),
@@ -61,9 +59,7 @@ void model::calculateState(double input_force)
   double alpha = (R * input_force) / I;
   double omega = state[1] + (alpha * h);
   double theta = state[0] + (omega * h);
-
-  //double theta = state[2] + (state[1] * h) + (omega * h);
-
+  
   state[2] = alpha;
   state[1] = omega;
   state[0] = theta;
@@ -93,10 +89,9 @@ void model::filterNoise(BaseFilter<double>& filter)
 ostream& operator<<(ostream& os, const model& Obj)
 {
   os.precision(8); // as requested
-  //os <<"Alpha: "<< Obj.state[0]<<", "
-  //   <<"Omega: " << Obj.state[1] << ","
-  //   <<"Theta: "<< Obj.state[2] <<"\n";
-  os << Obj.state[2] << ","<< Obj.state[1] << "," << Obj.state[0] << "\n";
+  os <<"Alpha: "<< Obj.state[2]<<", "
+     <<"Omega: " << Obj.state[1] << ","
+     <<"Theta: "<< Obj.state[0] <<"\n";
   return os;
 }
 

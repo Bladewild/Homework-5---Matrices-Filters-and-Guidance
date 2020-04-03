@@ -1,6 +1,6 @@
 /*
 * Author: Marky Santos-Tankia
-* File: SPLP.h Date: 3/13/20
+* File: SPLP.h Date: 4/3/20
 * Class: CS 5201
 * Instructor : Clayton Price
 *
@@ -17,7 +17,7 @@
 #include "basefilter.h"
 
  /*
- * Class:  single-pole low-pass filter
+ * Class:  SLPLFilter
  *  (essentially expoonential moving average)
  */
 template<typename T>

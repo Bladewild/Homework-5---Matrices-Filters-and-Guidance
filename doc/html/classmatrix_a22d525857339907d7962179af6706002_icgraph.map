@@ -1,0 +1,4 @@
+<map id="matrix::invert" name="matrix::invert">
+<area shape="rect" id="node1" title=" " alt="" coords="207,5,303,32"/>
+<area shape="rect" id="node2" href="$class_kalmanfilter.html#ac9ebf0af5fc34c7340184b3e9b256fcd" title="kalman filter, filters out noise based on model predicted" alt="" coords="5,5,159,32"/>
+</map>

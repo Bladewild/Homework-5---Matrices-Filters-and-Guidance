@@ -1,0 +1,4 @@
+<map id="model::filterNoise" name="model::filterNoise">
+<area shape="rect" id="node1" title="filters noise of the assumed noisy measured state" alt="" coords="5,5,128,32"/>
+<area shape="rect" id="node2" href="$class_p_i_d.html#aef6162cd98bebbcc0d25b85ed489e1f1" title="returns latestU value" alt="" coords="176,5,255,32"/>
+</map>

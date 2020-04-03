@@ -1,0 +1,16 @@
+#include "MATRIX_NAME.h"
+#include <vector>
+#include <tuple>
+#include <exception>
+#include <iostream>
+#include <iomanip>
+#include <numeric>
+#include <valarray>
+using std::cout;
+using std::endl;
+using std::cin;
+
+template <typename T>
+struct MatrixWrap {
+  typedef MATRIX_NAME<T> type;
+};
